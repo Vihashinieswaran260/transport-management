@@ -66,7 +66,7 @@ const LoginForm = () => {
         {/* ✨ Role Dropdown */}
         <select value={role} onChange={(e) => setRole(e.target.value)} className="role-dropdown">
           <option value="student">Student</option>
-          <option value="staff">Staff / Employee</option>
+          <option value="staff">Staff </option>
           <option value="admin">Admin</option>
         </select>
 
