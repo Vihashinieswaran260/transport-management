@@ -1,60 +1,91 @@
-import React from "react";
-import { Button, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+// pages/StudentDashboard.jsx
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Avatar } from '@mui/material';
+import { deepPurple } from '@mui/material/colors';
 
 const StudentDashboard = () => {
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  const features = [
-    { label: "Apply Transport", route: "/apply-transport" },
-    { label: "Cancel Transport", route: "/cancel-transport" },
-    { label: "Bus Tracking", route: "/bus-track" },
-    { label: "View Announcement", route: "/announcements" },
-  ];
+  useEffect(() => {
+    // Get user data from localStorage
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   const handleLogout = () => {
-    navigate("/");
+    localStorage.removeItem('user');
+    navigate('/');
   };
 
   return (
-    <div style={{ padding: "40px", backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: "30px",
-          borderRadius: "15px",
-          maxWidth: "400px",
-          margin: "auto",
-          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-          textAlign: "center",
-        }}
-      >
-        <Typography variant="h5" gutterBottom style={{ fontWeight: "bold", color: "#0D47A1" }}>
-          Student Dashboard
-        </Typography>
+    <div style={{ display: 'flex', height: '100vh', fontFamily: 'Arial, sans-serif' }}>
+      {/* Sidebar */}
+      <div style={{
+        width: '250px',
+        backgroundColor: '#1a237e',
+        color: 'white',
+        padding: '20px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}>
+        {user?.picture ? (
+          <Avatar
+            src={user.picture}
+            alt={user.name}
+            sx={{ width: 80, height: 80, marginBottom: '10px' }}
+          />
+        ) : (
+          <Avatar sx={{ bgcolor: deepPurple[500], width: 80, height: 80, marginBottom: '10px' }}>
+            {user?.name?.[0] || 'S'}
+          </Avatar>
+        )}
 
-        {features.map((feature, index) => (
-          <Button
-            key={index}
-            variant="contained"
-            style={{ backgroundColor: "#0D47A1", margin: "10px 0", width: "100%" }}
-            onClick={() => navigate(feature.route)}
-          >
-            {feature.label}
-          </Button>
-        ))}
+        <h3 style={{ marginBottom: '5px' }}>{user?.name || 'Student Panel'}</h3>
+        <p style={{ fontSize: '0.8rem', marginBottom: '30px', color: '#ccc' }}>{user?.email}</p>
 
-        <Button
-          variant="contained"
-          color="error"
-          style={{ marginTop: "20px", width: "100%" }}
-          onClick={handleLogout}
-        >
-          Logout
-        </Button>
+        <SidebarButton label="Apply Transport" onClick={() => navigate('/apply-transport')} />
+        <SidebarButton label="Cancel Bus" onClick={() => navigate('/cancel-transport')} />
+        <SidebarButton label="Track Bus" onClick={() => navigate('/bus-track')} />
+        <SidebarButton label="Announcements" onClick={() => navigate('/announcements')} />
+        <SidebarButton label="Logout" onClick={handleLogout} bgColor="#d32f2f" />
+      </div>
+
+      {/* Main Content */}
+      <div style={{ flexGrow: 1, backgroundColor: '#f5f5f5', padding: '40px' }}>
+        <h1 style={{ color: '#1a237e' }}>
+          Welcome Back, {user?.name?.split(' ')[0] || 'Student'}! 🎓
+        </h1>
+        <p>Select an option from the menu to manage your transport easily.</p>
+        <div style={{ marginTop: '30px' }}>
+          <img src="/bus.png" alt="Bus" style={{ width: '400px', maxWidth: '100%' }} />
+        </div>
       </div>
     </div>
   );
 };
+
+const SidebarButton = ({ label, onClick, bgColor }) => (
+  <button
+    onClick={onClick}
+    style={{
+      width: '100%',
+      margin: '10px 0',
+      padding: '12px',
+      backgroundColor: bgColor || '#3949ab',
+      color: 'white',
+      border: 'none',
+      borderRadius: '6px',
+      cursor: 'pointer',
+      textAlign: 'left'
+    }}
+  >
+    {label}
+  </button>
+);
 
 export default StudentDashboard;

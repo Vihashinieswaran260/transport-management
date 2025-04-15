@@ -1,76 +1,104 @@
-import React, { useState } from "react";
-import { Button, TextField, Typography, Box } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button, TextField, MenuItem, Typography, Paper, Box } from '@mui/material';
 
 const CancelTransport = () => {
-  const [busNumber, setBusNumber] = useState("");
-  const [cancelDate, setCancelDate] = useState("");
-  const [reason, setReason] = useState("");
-  const [message, setMessage] = useState("");
-
   const navigate = useNavigate();
 
-  const handleCancel = () => {
-    if (busNumber && cancelDate && reason) {
-      setMessage("Transport cancelled successfully ✅");
-      // You can send this data to backend here
-    } else {
-      setMessage("Please fill all fields ❗");
-    }
+  const [formData, setFormData] = React.useState({
+    name: '',
+    fatherName: '',
+    sinNumber: '',
+    year: '',
+    institution: '',
+    scholarType: '',
+    quota: '',
+    mentor: '',
+    busRoute: '',
+    phoneNumber: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Cancellation form submitted:', formData);
   };
 
   return (
-    <Box sx={{ p: 4, maxWidth: 500, mx: "auto", mt: 5, boxShadow: 3, borderRadius: 2, bgcolor: "#fff" }}>
-      <Button onClick={() => navigate("/student-dashboard")} variant="outlined" sx={{ mb: 2 }}>
-        ← Back
-      </Button>
-
-      <Typography variant="h5" gutterBottom>
-        Cancel Transport
-      </Typography>
-
-      <TextField
-        fullWidth
-        label="Bus Number"
-        value={busNumber}
-        onChange={(e) => setBusNumber(e.target.value)}
-        margin="normal"
-      />
-
-      <TextField
-        fullWidth
-        type="date"
-        label="Cancellation Date"
-        value={cancelDate}
-        onChange={(e) => setCancelDate(e.target.value)}
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-      />
-
-      <TextField
-        fullWidth
-        label="Reason for Cancellation"
-        value={reason}
-        onChange={(e) => setReason(e.target.value)}
-        margin="normal"
-        multiline
-        rows={3}
-      />
-
-      <Button variant="contained" color="error" fullWidth onClick={handleCancel} sx={{ mt: 2 }}>
-        Cancel Transport
-      </Button>
-
-      {message && (
-        <Typography sx={{ mt: 2 }} color={message.includes("successfully") ? "green" : "red"}>
-          {message}
+    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+      <Paper elevation={3} sx={{ p: 4, width: '90%', maxWidth: '600px' }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          Transport Cancellation Application
         </Typography>
-      )}
+        <form onSubmit={handleSubmit}>
+          <TextField fullWidth margin="normal" name="name" label="Name" value={formData.name} onChange={handleChange} required />
+          <TextField fullWidth margin="normal" name="fatherName" label="Father Name" value={formData.fatherName} onChange={handleChange} required />
+          <TextField fullWidth margin="normal" name="sinNumber" label="Sin Number" value={formData.sinNumber} onChange={handleChange} required />
+          <TextField fullWidth margin="normal" name="year" label="Year" value={formData.year} onChange={handleChange} required />
+          <TextField fullWidth margin="normal" name="institution" label="Institution Name" value={formData.institution} onChange={handleChange} required />
+          
+          <TextField
+            select
+            fullWidth
+            margin="normal"
+            name="scholarType"
+            label="Day Scholar / Hosteller"
+            value={formData.scholarType}
+            onChange={handleChange}
+            required
+          >
+            <MenuItem value="Day Scholar">Day Scholar</MenuItem>
+            <MenuItem value="Hosteller">Hosteller</MenuItem>
+          </TextField>
+
+          <TextField fullWidth margin="normal" name="quota" label="Quota" value={formData.quota} onChange={handleChange} required />
+          <TextField fullWidth margin="normal" name="mentor" label="Mentor" value={formData.mentor} onChange={handleChange} required />
+
+          <TextField
+            select
+            fullWidth
+            margin="normal"
+            name="busRoute"
+            label="Bus Route"
+            value={formData.busRoute}
+            onChange={handleChange}
+            required
+          >
+            <MenuItem value="Salem">Salem</MenuItem>
+            <MenuItem value="Tiruchengode">Tiruchengode</MenuItem>
+            <MenuItem value="Erode">Erode</MenuItem>
+            <MenuItem value="Sankari">Sankari</MenuItem>
+            <MenuItem value="Namakkal">Namakkal</MenuItem>
+          </TextField>
+
+          <TextField
+            fullWidth
+            margin="normal"
+            name="phoneNumber"
+            label="Phone Number"
+            type="tel"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            required
+          />
+
+          <Box display="flex" justifyContent="space-between" mt={3}>
+            <Button variant="outlined" color="secondary" onClick={() => navigate('/student-dashboard')}>
+              Back
+            </Button>
+            <Button variant="contained" type="submit">Submit</Button>
+          </Box>
+        </form>
+      </Paper>
     </Box>
   );
 };
 
 export default CancelTransport;
+
 
 
 

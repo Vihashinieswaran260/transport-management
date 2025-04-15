@@ -1,81 +1,119 @@
-import React, { useState } from "react";
-import {
-  Button,
-  TextField,
-  MenuItem,
-  Typography,
-  Box,
-  Select,
-  FormControl,
-  InputLabel,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button, TextField, MenuItem, Typography, Paper, Box, Snackbar, Alert } from '@mui/material';
 
 const ApplyTransport = () => {
-  const [userType, setUserType] = useState("");
-  const [route, setRoute] = useState("");
-  const [address, setAddress] = useState("");
-  const [pickupPoint, setPickupPoint] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    if (userType && route && address && pickupPoint) {
-      const date = new Date().toLocaleDateString();
-      setSuccessMessage(`${userType} Transport applied successfully on ${date} 🎉`);
-      // Backend integration here
-    } else {
-      setSuccessMessage("Please fill all fields ❗");
-    }
+  const [formData, setFormData] = React.useState({
+    name: '',
+    fatherName: '',
+    sinNumber: '',
+    year: '',
+    institution: '',
+    scholarType: '',
+    quota: '',
+    mentor: '',
+    busRoute: '',
+    phoneNumber: ''
+  });
+
+  const [open, setOpen] = React.useState(false); // Snackbar state
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const routes = ["Route 1 - City Center", "Route 2 - West End", "Route 3 - East Station"];
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Application form submitted:', formData);
+    setOpen(true); // Show success message
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
-    <Box sx={{ p: 4, maxWidth: 500, mx: "auto", mt: 5, boxShadow: 3, borderRadius: 2, bgcolor: "#fff" }}>
-      <Button onClick={() => navigate("/student-dashboard")} variant="outlined" sx={{ mb: 2 }}>
-        ← Back
-      </Button>
-
-      <Typography variant="h5" gutterBottom>Apply for Transport</Typography>
-
-      <FormControl fullWidth margin="normal">
-        <InputLabel>User Type</InputLabel>
-        <Select value={userType} onChange={(e) => setUserType(e.target.value)} label="User Type">
-          <MenuItem value="Student">Student</MenuItem>
-        </Select>
-      </FormControl>
-
-      <TextField
-        select
-        label="Select Route"
-        value={route}
-        onChange={(e) => setRoute(e.target.value)}
-        fullWidth
-        margin="normal"
-      >
-        {routes.map((option) => (
-          <MenuItem key={option} value={option}>
-            {option}
-          </MenuItem>
-        ))}
-      </TextField>
-
-      <TextField label="Address" value={address} onChange={(e) => setAddress(e.target.value)} fullWidth margin="normal" />
-      <TextField label="Preferred Pickup Point" value={pickupPoint} onChange={(e) => setPickupPoint(e.target.value)} fullWidth margin="normal" />
-
-      <Button variant="contained" color="primary" fullWidth onClick={handleSubmit} sx={{ mt: 2 }}>
-        Submit
-      </Button>
-
-      {successMessage && (
-        <Typography sx={{ mt: 2 }} color={successMessage.includes("successfully") ? "green" : "red"}>
-          {successMessage}
+    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+      <Paper elevation={3} sx={{ p: 4, width: '90%', maxWidth: '600px' }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          Transport Joining Application
         </Typography>
-      )}
+        <form onSubmit={handleSubmit}>
+          <TextField fullWidth margin="normal" name="name" label="Name" value={formData.name} onChange={handleChange} required />
+          <TextField fullWidth margin="normal" name="fatherName" label="Father Name" value={formData.fatherName} onChange={handleChange} required />
+          <TextField fullWidth margin="normal" name="sinNumber" label="Sin Number" value={formData.sinNumber} onChange={handleChange} required />
+          <TextField fullWidth margin="normal" name="year" label="Year" value={formData.year} onChange={handleChange} required />
+          <TextField fullWidth margin="normal" name="institution" label="Institution Name" value={formData.institution} onChange={handleChange} required />
+          
+          <TextField
+            select
+            fullWidth
+            margin="normal"
+            name="scholarType"
+            label="Day Scholar / Hosteller"
+            value={formData.scholarType}
+            onChange={handleChange}
+            required
+          >
+            <MenuItem value="Day Scholar">Day Scholar</MenuItem>
+            <MenuItem value="Hosteller">Hosteller</MenuItem>
+          </TextField>
+
+          <TextField fullWidth margin="normal" name="quota" label="Quota" value={formData.quota} onChange={handleChange} required />
+          <TextField fullWidth margin="normal" name="mentor" label="Mentor" value={formData.mentor} onChange={handleChange} required />
+
+          <TextField
+            select
+            fullWidth
+            margin="normal"
+            name="busRoute"
+            label="Bus Route"
+            value={formData.busRoute}
+            onChange={handleChange}
+            required
+          >
+            <MenuItem value="Salem">Salem</MenuItem>
+            <MenuItem value="Tiruchengode">Tiruchengode</MenuItem>
+            <MenuItem value="Erode">Erode</MenuItem>
+            <MenuItem value="Sankari">Sankari</MenuItem>
+            <MenuItem value="Namakkal">Namakkal</MenuItem>
+          </TextField>
+
+          <TextField
+            fullWidth
+            margin="normal"
+            name="phoneNumber"
+            label="Phone Number"
+            type="tel"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            required
+          />
+
+          <Box display="flex" justifyContent="space-between" mt={3}>
+            <Button variant="outlined" color="secondary" onClick={() => navigate('/student-dashboard')}>
+              Back
+            </Button>
+            <Button variant="contained" type="submit">Submit</Button>
+          </Box>
+        </form>
+      </Paper>
+
+      {/* Snackbar Success Message */}
+      <Snackbar open={open} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          Application submitted successfully!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
 
 export default ApplyTransport;
+
+
+
+
 
