@@ -1,119 +1,193 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, TextField, MenuItem, Typography, Paper, Box, Snackbar, Alert } from '@mui/material';
+import { Button } from '@mui/material';
 
 const ApplyTransport = () => {
   const navigate = useNavigate();
+  const [sin, setSin] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [studentData, setStudentData] = useState({});
+  const [busRoute, setBusRoute] = useState('');
+  const [applicationDate, setApplicationDate] = useState('');
+  const [address, setAddress] = useState('');
+  const [showID, setShowID] = useState(false);
+  const [generatedID, setGeneratedID] = useState('');
 
-  const [formData, setFormData] = React.useState({
-    name: '',
-    fatherName: '',
-    sinNumber: '',
-    year: '',
-    institution: '',
-    scholarType: '',
-    quota: '',
-    mentor: '',
-    busRoute: '',
-    phoneNumber: ''
-  });
+  const handleNext = async () => {
+    // You can replace the below mock fetch with your actual backend call
+    // Example:
+    // const res = await fetch(`/api/student/${sin}`);
+    // const data = await res.json();
+    // setStudentData(data);
 
-  const [open, setOpen] = React.useState(false); // Snackbar state
+    // TEMP MOCK LOGIC (REMOVE THIS IN FINAL)
+    if (sin.trim() === '') {
+      alert('Please enter a valid SIN number');
+      return;
+    }
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Example response from backend (replace with real data)
+    const data = {
+      name: '',
+      fatherName: '',
+      email: '',
+      year: '',
+      college: '',
+      mobile: '',
+    };
+
+    setStudentData(data);
+    setShowForm(true);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Application form submitted:', formData);
-    setOpen(true); // Show success message
-  };
+  const handleSubmit = () => {
+    if (!busRoute || !applicationDate || !address.trim()) {
+      alert('Please fill in all the fields before submitting.');
+      return;
+    }
+    const id = 'TID' + Math.floor(Math.random() * 100000);
+    setGeneratedID(id);
+    setShowID(true);
 
-  const handleClose = () => {
-    setOpen(false);
+    // You can send this data to the backend here
+    // Example:
+    // fetch('/api/apply', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ sin, ...studentData, busRoute, applicationDate, address, requestId: id })
+    // });
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-      <Paper elevation={3} sx={{ p: 4, width: '90%', maxWidth: '600px' }}>
-        <Typography variant="h5" fontWeight="bold" gutterBottom>
-          Transport Joining Application
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <TextField fullWidth margin="normal" name="name" label="Name" value={formData.name} onChange={handleChange} required />
-          <TextField fullWidth margin="normal" name="fatherName" label="Father Name" value={formData.fatherName} onChange={handleChange} required />
-          <TextField fullWidth margin="normal" name="sinNumber" label="Sin Number" value={formData.sinNumber} onChange={handleChange} required />
-          <TextField fullWidth margin="normal" name="year" label="Year" value={formData.year} onChange={handleChange} required />
-          <TextField fullWidth margin="normal" name="institution" label="Institution Name" value={formData.institution} onChange={handleChange} required />
-          
-          <TextField
-            select
-            fullWidth
-            margin="normal"
-            name="scholarType"
-            label="Day Scholar / Hosteller"
-            value={formData.scholarType}
-            onChange={handleChange}
-            required
+    <div
+      style={{
+        backgroundColor: '#e3f2fd',
+        minHeight: '100vh',
+        padding: '40px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      {!showForm ? (
+        <div
+          style={{
+            backgroundColor: '#fff',
+            padding: '40px',
+            borderRadius: '12px',
+            textAlign: 'center',
+            width: '500px',
+          }}
+        >
+          <h2>Student Apply Transport</h2>
+          <label><strong>Enter your SIN Number:</strong></label>
+          <input
+            type="text"
+            value={sin}
+            onChange={(e) => setSin(e.target.value)}
+            style={{
+              padding: '10px',
+              width: '100%',
+              margin: '10px 0 20px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+            }}
+          />
+          <button onClick={handleNext} style={{ padding: '10px 20px' }}>Next</button>
+        </div>
+      ) : (
+        <div
+          style={{
+            backgroundColor: '#fff',
+            padding: '50px',
+            borderRadius: '12px',
+            width: '550px',
+            textAlign: 'left',
+            position: 'relative',
+          }}
+        >
+          <Button
+            variant="outlined"
+            onClick={() => navigate(-1)}
+            style={{ position: 'absolute', top: '20px', right: '20px' }}
           >
-            <MenuItem value="Day Scholar">Day Scholar</MenuItem>
-            <MenuItem value="Hosteller">Hosteller</MenuItem>
-          </TextField>
+            ← Back
+          </Button>
 
-          <TextField fullWidth margin="normal" name="quota" label="Quota" value={formData.quota} onChange={handleChange} required />
-          <TextField fullWidth margin="normal" name="mentor" label="Mentor" value={formData.mentor} onChange={handleChange} required />
+          <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Student Transport Form</h2>
 
-          <TextField
-            select
-            fullWidth
-            margin="normal"
-            name="busRoute"
-            label="Bus Route"
-            value={formData.busRoute}
-            onChange={handleChange}
-            required
-          >
-            <MenuItem value="Salem">Salem</MenuItem>
-            <MenuItem value="Tiruchengode">Tiruchengode</MenuItem>
-            <MenuItem value="Erode">Erode</MenuItem>
-            <MenuItem value="Sankari">Sankari</MenuItem>
-            <MenuItem value="Namakkal">Namakkal</MenuItem>
-          </TextField>
+          <p><strong>SIN Number:</strong> {sin}</p>
+          <p><strong>Name:</strong> {studentData.name}</p>
+          <p><strong>Father Name:</strong> {studentData.fatherName}</p>
+          <p><strong>Email:</strong> {studentData.email}</p>
+          <p><strong>Year:</strong> {studentData.year}</p>
+          <p><strong>College:</strong> {studentData.college}</p>
+          <p><strong>Mobile:</strong> {studentData.mobile}</p>
 
-          <TextField
-            fullWidth
-            margin="normal"
-            name="phoneNumber"
-            label="Phone Number"
-            type="tel"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            required
+          <label><strong>Date of Application:</strong></label>
+          <input
+            type="date"
+            value={applicationDate}
+            onChange={(e) => setApplicationDate(e.target.value)}
+            style={{
+              padding: '10px',
+              width: '100%',
+              margin: '10px 0 20px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+            }}
           />
 
-          <Box display="flex" justifyContent="space-between" mt={3}>
-            <Button variant="outlined" color="secondary" onClick={() => navigate('/student-dashboard')}>
-              Back
-            </Button>
-            <Button variant="contained" type="submit">Submit</Button>
-          </Box>
-        </form>
-      </Paper>
+          <label><strong>Select Bus Route:</strong></label>
+          <select
+            value={busRoute}
+            onChange={(e) => setBusRoute(e.target.value)}
+            style={{
+              padding: '10px',
+              width: '100%',
+              margin: '10px 0 20px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+            }}
+          >
+            <option value="">--Select--</option>
+            <option value="Salem">Salem</option>
+            <option value="Thiruchengode">Thiruchengode</option>
+            <option value="Namakkal">Namakkal</option>
+            <option value="Sankari">Sankari</option>
+            <option value="Kumarapalayam">Kumarapalayam</option>
+          </select>
 
-      {/* Snackbar Success Message */}
-      <Snackbar open={open} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          Application submitted successfully!
-        </Alert>
-      </Snackbar>
-    </Box>
+          <label><strong>Address:</strong></label>
+          <textarea
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            rows={3}
+            placeholder="Enter your full address"
+            style={{
+              padding: '10px',
+              width: '100%',
+              margin: '10px 0 20px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              resize: 'none',
+            }}
+          />
+
+          <div style={{ textAlign: 'center' }}>
+            <button onClick={handleSubmit} style={{ padding: '10px 20px' }}>
+              Submit Request
+            </button>
+          </div>
+
+          {showID && (
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+              <p><strong>Generated ID:</strong> {generatedID}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 
 export default ApplyTransport;
-
-
-
-
-

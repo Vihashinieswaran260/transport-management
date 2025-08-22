@@ -1,0 +1,48 @@
+/* TransportForm.css */
+.transport-container {
+  /* background-image: url('/college-bg.png'); <-- remove this line */
+  background-size: cover;
+  background-position: center;
+  padding: 40px;
+  min-height: 100vh;
+  color: #000;
+  text-align: center;
+}
+
+.logo {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+.input-section,
+.form-section {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  margin: auto;
+  width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+input,
+select {
+  margin: 10px 0;
+  padding: 8px;
+  width: 80%;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 8px 16px;
+  margin: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007BFF;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}

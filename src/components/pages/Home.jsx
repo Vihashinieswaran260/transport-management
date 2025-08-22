@@ -1,104 +1,62 @@
-import React, { useEffect, useState } from "react";
-import { Typography, Box } from "@mui/material";
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
-import axios from "axios";
-
-const COLORS = ["#0088FE", "#FF8042", "#00C49F", "#FFBB28", "#AA336A"];
+import React from 'react';
+import { Button, Card, CardContent, Typography, Avatar, Divider } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import './Home.css';
 
 const Home = () => {
-  const [students, setStudents] = useState([]);
-  const [totalUsers, setTotalUsers] = useState(200); // Example total users
-  const [routeCounts, setRouteCounts] = useState([]);
+  const adminInfo = {
+    name: 'Admin Name',
+    id: 'ADM001',
+    email: 'admin@example.com',
+    mobile: '9876543210',
+  };
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/apply")
-      .then((response) => {
-        setStudents(response.data);
-
-        const routeMap = {};
-        response.data.forEach((student) => {
-          routeMap[student.route] = (routeMap[student.route] || 0) + 1;
-        });
-
-        const routeData = Object.entries(routeMap).map(([route, count]) => ({
-          name: route,
-          value: count,
-        }));
-
-        setRouteCounts(routeData);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
-
-  const appliedChart = [
-    { name: "Applied", value: students.length },
-    { name: "Not Applied", value: totalUsers - students.length },
-  ];
+  const emergencyNumber = '108'; // You can change this to your preferred number
 
   return (
-    <Box p={4}>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#0d47a1" }}>
-        Transport Dashboard
-      </Typography>
+    <div className="home-container">
+      <div className="image-section">
+        <img
+          src="/dashboard-bg.jpeg"
+          alt="Admin Dashboard"
+          className="dashboard-image"
+        />
+      </div>
+      <div className="profile-section">
+        <Card className="profile-card">
+          <CardContent>
+            <Avatar sx={{ width: 100, height: 100, margin: '0 auto' }} />
+            <Typography variant="h6" align="center" mt={2}>
+              {adminInfo.name}
+            </Typography>
+            <Typography variant="body2" align="center">
+              ID: {adminInfo.id}
+            </Typography>
+            <Typography variant="body2" align="center">
+              Email: {adminInfo.email}
+            </Typography>
+            <Typography variant="body2" align="center">
+              Mobile: {adminInfo.mobile}
+            </Typography>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+              <Button variant="contained" startIcon={<EditIcon />}>
+                Edit
+              </Button>
+            </div>
 
-      <Typography variant="body1" sx={{ mb: 2 }}>
-        This dashboard provides insights into students using the college transport system.
-        You can view how many students have applied for transport and how they are distributed across routes.
-      </Typography>
-
-      <Box display="flex" flexWrap="wrap" gap={6}>
-        {/* Applied vs Not Applied Pie Chart */}
-        <Box>
-          <Typography variant="h6" gutterBottom>
-            Applied vs Not Applied
-          </Typography>
-          <PieChart width={350} height={300}>
-            <Pie
-              data={appliedChart}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              label
-            >
-              {appliedChart.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </Box>
-
-        {/* Route Distribution Pie Chart */}
-        <Box>
-          <Typography variant="h6" gutterBottom>
-            Route Distribution
-          </Typography>
-          <PieChart width={350} height={300}>
-            <Pie
-              data={routeCounts}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              label
-            >
-              {routeCounts.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </Box>
-      </Box>
-    </Box>
+            {/* Emergency Section */}
+            <Divider sx={{ marginY: 2 }} />
+            <Typography variant="subtitle1" align="center" fontWeight="bold">
+              Emergency Contact
+            </Typography>
+            <Typography variant="body1" align="center" color="error" fontWeight="bold">
+              {emergencyNumber}
+            </Typography>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
 
 export default Home;
-

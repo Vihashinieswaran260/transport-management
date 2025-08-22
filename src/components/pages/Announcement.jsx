@@ -1,44 +1,80 @@
-// src/components/pages/Announcement.jsx
-import React from "react";
-import { Box, Typography, List, ListItem, ListItemText, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { Box, Typography, Button, List, ListItem, ListItemText } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Announcement = () => {
   const navigate = useNavigate();
 
-  const announcements = [
-    { id: 1, title: "Route 1 delay", message: "Bus will arrive 15 mins late due to traffic." },
-    { id: 2, title: "New pickup point", message: "New pickup added near Main Street." },
-    { id: 3, title: "Holiday Notice", message: "No transport service on April 14th (Holiday)." },
-  ];
+  const [announcementsList] = useState([]); // No dummy data
+  const [showPastAnnouncements, setShowPastAnnouncements] = useState(false);
 
   const handleBack = () => {
-    navigate("/student-dashboard");
+    navigate(-1);
   };
 
+  const togglePastAnnouncements = () => {
+    setShowPastAnnouncements(!showPastAnnouncements);
+  };
+
+  const latestAnnouncement = announcementsList[0];
+
   return (
-    <Box sx={{ p: 4, maxWidth: 600, mx: "auto", mt: 5, boxShadow: 3, borderRadius: 2, bgcolor: "#fff" }}>
+    <Box sx={{ padding: 3, backgroundColor: '#e0f7fa', minHeight: '100vh' }}>
       <Button onClick={handleBack} variant="outlined" sx={{ mb: 2 }}>
         ← Back
       </Button>
 
-      <Typography variant="h5" gutterBottom>
-        Announcements 📢
+      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
+        Announcements
       </Typography>
 
-      <List>
-        {announcements.map((announcement) => (
-          <ListItem key={announcement.id} sx={{ mb: 2, bgcolor: "#f0f4ff", borderRadius: 1 }}>
-            <ListItemText
-              primary={<strong>{announcement.title}</strong>}
-              secondary={announcement.message}
-            />
-          </ListItem>
-        ))}
-      </List>
+      {/* Latest Announcement */}
+      {latestAnnouncement ? (
+        <Box sx={{ backgroundColor: '#b3e5fc', padding: 2, borderRadius: '8px', mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+            Latest Update:
+          </Typography>
+          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+            {latestAnnouncement.text}
+          </Typography>
+          <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'gray' }}>
+            {latestAnnouncement.date}
+          </Typography>
+        </Box>
+      ) : (
+        <Typography variant="body1" sx={{ mb: 3 }}>
+          No announcements available.
+        </Typography>
+      )}
+
+      {/* Toggle Past Announcements */}
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={togglePastAnnouncements}
+        sx={{ mb: 3 }}
+        disabled={announcementsList.length <= 1}
+      >
+        {showPastAnnouncements ? 'Hide Past Announcements' : 'Show Past Announcements'}
+      </Button>
+
+      {/* Past Announcements */}
+      {showPastAnnouncements && announcementsList.length > 1 && (
+        <>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+            Past Announcements:
+          </Typography>
+          <List>
+            {announcementsList.slice(1).map((ann, index) => (
+              <ListItem key={index}>
+                <ListItemText primary={ann.text} secondary={ann.date} />
+              </ListItem>
+            ))}
+          </List>
+        </>
+      )}
     </Box>
   );
 };
 
 export default Announcement;
-

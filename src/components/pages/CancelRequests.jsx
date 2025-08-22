@@ -1,156 +1,171 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
-  PieChart, Pie, Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
-import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Paper, Button, Typography
+} from "@mui/material";
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA66CC'];
-const routesList = ["Salem", "Tiruchengode", "Erode", "Sankari", "Namakkal"];
+// Fetching real data (assuming a function that fetches real data)
 
-const CancelRequests = () => {
-  const [requests, setRequests] = useState([]);
-  const [routeFilter, setRouteFilter] = useState('All');
-  const [statusFilter, setStatusFilter] = useState('All');
+export default function CancelRequests() {
+  const [rows, setRows] = useState([]);
+  const [emailPreviewId, setEmailPreviewId] = useState(null);
 
   useEffect(() => {
-    const dummyData = [
-      { name: "Anu", role: "Student", destination: "Salem", status: "Pending" },
-      { name: "Charu", role: "Student", destination: "Namakkal", status: "Rejected" },
-      { name: "Elakkiya", role: "Student", destination: "Sankari", status: "Pending" },
-      { name: "Farook", role: "Student", destination: "Tiruchengode", status: "Approved" },
-      { name: "Geetha", role: "Student", destination: "Namakkal", status: "Rejected" },
-      { name: "Hari", role: "Student", destination: "Sankari", status: "Pending" },
-      { name: "Jagan", role: "Student", destination: "Salem", status: "Approved" },
-      { name: "Mani", role: "Student", destination: "Erode", status: "Pending" },
-      { name: "Praveen", role: "Student", destination: "Sankari", status: "Approved" },
-      { name: "Sangeetha", role: "Student", destination: "Namakkal", status: "Pending" },
-    ];
-    setRequests(dummyData);
+    // Replace this with your actual data fetching logic
+    // For example, if using an API, you can use fetch or axios here to get the data
+
+    const fetchData = async () => {
+      try {
+        // Example API call (replace with actual endpoint)
+        const response = await fetch('/api/cancel-requests');
+        const data = await response.json();
+        setRows(data);  // Set the fetched data
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();  // Call the data fetch function when the component mounts
   }, []);
 
-  const filteredRequests = requests.filter(req =>
-    (routeFilter === 'All' || req.destination === routeFilter) &&
-    (statusFilter === 'All' || req.status === statusFilter)
-  );
+  const handleApprove = (id) => {
+    const updated = rows.map((row) =>
+      row.id === id ? { ...row, status: "Approved" } : row
+    );
+    setRows(updated);
+    setEmailPreviewId(id); // Show email preview
+  };
 
-  const pieData = routesList.map(route => {
-    const count = filteredRequests.filter(r => r.destination === route).length;
-    return { name: route, value: count };
-  });
+  const handleReject = (id) => {
+    const updated = rows.map((row) =>
+      row.id === id ? { ...row, status: "Rejected" } : row
+    );
+    setRows(updated);
+    setEmailPreviewId(null); // Hide preview if rejected
+  };
 
-  const handleStatusChange = (index, newStatus) => {
-    const updated = [...filteredRequests];
-    updated[index].status = newStatus;
-    const all = [...requests];
-    const originalIndex = all.findIndex(r => r.name === updated[index].name);
-    all[originalIndex].status = newStatus;
-    setRequests(all);
+  const handleClosePreview = () => {
+    setEmailPreviewId(null);
   };
 
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" sx={{ color: '#d32f2f', fontWeight: 'bold', mb: 3 }}>
-        ❌ Cancel Requests Overview
+    <div style={{ padding: 20, backgroundColor: "#e6f2ff", minHeight: "100vh" }}>
+      <Typography variant="h5" align="center" gutterBottom fontWeight="bold">
+        CANCEL TRANSPORT REQUESTS
       </Typography>
 
-      <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-        <FormControl>
-          <InputLabel>Route</InputLabel>
-          <Select value={routeFilter} onChange={e => setRouteFilter(e.target.value)} label="Route">
-            <MenuItem value="All">All</MenuItem>
-            {routesList.map(route => (
-              <MenuItem key={route} value={route}>{route}</MenuItem>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => window.history.back()}
+        style={{ marginBottom: 20 }}
+      >
+        Back
+      </Button>
+
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell><b>S.No</b></TableCell>
+              <TableCell><b>SIN No</b></TableCell>
+              <TableCell><b>Name</b></TableCell>
+              <TableCell><b>Dept</b></TableCell>
+              <TableCell><b>Email</b></TableCell>
+              <TableCell><b>Address</b></TableCell>
+              <TableCell><b>Route</b></TableCell>
+              <TableCell><b>Reason</b></TableCell>
+              <TableCell><b>Date</b></TableCell>
+              <TableCell><b>Application ID</b></TableCell>
+              <TableCell><b>Status</b></TableCell>
+              <TableCell><b>Action</b></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row, idx) => (
+              <TableRow key={row.id}>
+                <TableCell>{idx + 1}</TableCell>
+                <TableCell>{row.sin}</TableCell>
+                <TableCell>{row.name}</TableCell>
+                <TableCell>{row.dept}</TableCell>
+                <TableCell>{row.email}</TableCell>
+                <TableCell>{row.address}</TableCell>
+                <TableCell>{row.route}</TableCell>
+                <TableCell>{row.reason}</TableCell>
+                <TableCell>{row.date}</TableCell>
+                <TableCell>{row.requestId}</TableCell>
+                <TableCell>
+                  <span
+                    style={{
+                      backgroundColor:
+                        row.status === "Approved"
+                          ? "green"
+                          : row.status === "Rejected"
+                          ? "red"
+                          : "#ffc107",
+                      color: "#fff",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    {row.status}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  {row.status === "Pending" ? (
+                    <>
+                      <Button onClick={() => handleApprove(row.id)} color="success" size="small">Approve</Button>
+                      <Button onClick={() => handleReject(row.id)} color="error" size="small">Reject</Button>
+                    </>
+                  ) : (
+                    <span style={{ color: "gray" }}>—</span>
+                  )}
+                </TableCell>
+              </TableRow>
             ))}
-          </Select>
-        </FormControl>
-        <FormControl>
-          <InputLabel>Status</InputLabel>
-          <Select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} label="Status">
-            <MenuItem value="All">All</MenuItem>
-            <MenuItem value="Pending">Pending</MenuItem>
-            <MenuItem value="Approved">Approved</MenuItem>
-            <MenuItem value="Rejected">Rejected</MenuItem>
-          </Select>
-        </FormControl>
-        <Button onClick={() => { setRouteFilter('All'); setStatusFilter('All'); }}>
-          Reset Filters
-        </Button>
-      </Box>
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      <Box sx={{ height: 300, mb: 4 }}>
-        <ResponsiveContainer>
-          <PieChart>
-            <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
-              {pieData.map((_, index) => (
-                <Cell key={index} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
-      </Box>
-
-      <Box>
-        <table border="1" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ backgroundColor: '#c62828', color: 'white' }}>
-              <th>Name</th>
-              <th>Role</th>
-              <th>Destination</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRequests.length === 0 ? (
-              <tr><td colSpan="5">No requests found.</td></tr>
-            ) : (
-              filteredRequests.map((req, index) => (
-                <tr key={index} style={{ backgroundColor: getRowColor(req.status) }}>
-                  <td>{req.name}</td>
-                  <td>{req.role}</td>
-                  <td>{req.destination}</td>
-                  <td>{req.status}</td>
-                  <td>
-                    <Button
-                      onClick={() => handleStatusChange(index, 'Approved')}
-                      disabled={req.status !== 'Pending'}
-                      variant="contained"
-                      color="success"
-                      size="small"
-                      sx={{ mr: 1 }}
-                    >Approve</Button>
-                    <Button
-                      onClick={() => handleStatusChange(index, 'Rejected')}
-                      disabled={req.status !== 'Pending'}
-                      variant="contained"
-                      color="error"
-                      size="small"
-                    >Reject</Button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </Box>
-    </Box>
+      {/* Sample Email Preview */}
+      {emailPreviewId && (
+        <div
+          style={{
+            marginTop: 30,
+            padding: 20,
+            backgroundColor: "#fff",
+            border: "2px solid #2196f3",
+            borderRadius: 10,
+            maxWidth: 700,
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        >
+          <Typography variant="h6" gutterBottom fontWeight="bold">
+            Sample Email Content Sent to Student
+          </Typography>
+          <Typography paragraph>
+            Dear Student,<br /><br />
+            Your transport facility cancellation request has been approved successfully.
+          </Typography>
+          <Typography paragraph>
+            <b>Reason:</b> {rows.find(r => r.id === emailPreviewId)?.reason}
+          </Typography>
+          <Typography paragraph>
+            <b>Request ID:</b> {rows.find(r => r.id === emailPreviewId)?.requestId}
+          </Typography>
+          <Typography paragraph>
+            <b>Date:</b> {rows.find(r => r.id === emailPreviewId)?.date}
+          </Typography>
+          <Typography paragraph>
+            If you have any questions, please contact the Transport Office.<br /><br />
+            Thank you!
+          </Typography>
+          <Button onClick={handleClosePreview} variant="outlined" color="primary">
+            Close
+          </Button>
+        </div>
+      )}
+    </div>
   );
-};
-
-const getRowColor = (status) => {
-  switch (status) {
-    case 'Approved': return '#e8f5e9';
-    case 'Rejected': return '#ffebee';
-    case 'Pending': return '#fffde7';
-    default: return 'white';
-  }
-};
-
-export default CancelRequests;
-
-
-
-
+}
